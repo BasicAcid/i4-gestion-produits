@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_DATABASE=gestion_produits
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./database/:/docker-entrypoint-initdb.d
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      MYSQL_HOST: db
+      MYSQL_ROOT_PASSWORD: 'root'
