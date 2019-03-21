@@ -4,3 +4,4 @@ COPY ./www/ /var/www/html
 USER root
 RUN docker-php-ext-install mysqli
 RUN chmod -R 777 /var/www/html/uploads
+RUN apt update && apt -y upgrade
