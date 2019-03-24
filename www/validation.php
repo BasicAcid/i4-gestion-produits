@@ -5,8 +5,8 @@
     $action = (isset($_POST['action'])) ? $_POST['action'] : $_GET['action'];
 
     switch ($action) {
-        
-        
+
+
         case 'ajout_produit':
 
             $PRO_lib = ($_POST['PRO_lib'] != '') ? "'".mysqli_real_escape_string($link, $_POST['PRO_lib'])."'" : 'null';
@@ -24,8 +24,8 @@
                         $extension = pathinfo($_FILES["PRO_ressources"]["name"][$key],PATHINFO_EXTENSION);
                         $md5 = md5_file($tmp_name);
                         $name = $PRO_id."-".$md5.".".$extension;
-                        $url = "uploads/$name";
-                        move_uploaded_file($tmp_name, $url);
+                        // $url = "uploads/$name";
+                        // move_uploaded_file($tmp_name, $url);
 
                         $sql = "INSERT INTO ressources (RE_type,RE_url,PRO_id) VALUES ('img','$url','$PRO_id')";
                         mysqli_query($link,$sql);
@@ -72,8 +72,8 @@
                 die("Erreur SQL");
             }
             break;
-        
-        
+
+
         case 'supprimer_ressource':
             if(isset($_POST['RE_id'])) {
                 $RE_id = mysqli_real_escape_string($link, $_POST['RE_id']);
@@ -82,7 +82,7 @@
                 $res = mysqli_query($link, $sql);
                 if(mysqli_num_rows($res) > 0) {
                     $ressource = mysqli_fetch_assoc($res);
-                    
+
                     $sql = "DELETE FROM ressources WHERE RE_id = '$RE_id'";
                     if (mysqli_query($link, $sql)) {
                         if (file_exists($ressource['RE_url'])) {
@@ -98,7 +98,7 @@
             }
             break;
 
-        
+
         case 'supprimer_produit':
             if(isset($_POST['PRO_id'])) {
                 $PRO_id = mysqli_real_escape_string($link, $_POST['PRO_id']);
@@ -107,7 +107,7 @@
                 $res = mysqli_query($link, $sql);
                 if(mysqli_num_rows($res) > 0) {
                     $produit = mysqli_fetch_assoc($res);
-                    
+
                     $sql = "SELECT * FROM ressources WHERE PRO_id = $PRO_id";
                     $res = mysqli_query($link,$sql);
                     if (mysqli_num_rows($res) > 0) {
@@ -134,9 +134,9 @@
                 }
             }
             break;
-        
-        
-        
+
+
+
         default:
             # code...
             break;
