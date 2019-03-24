@@ -2,6 +2,7 @@
     session_start();
     include 'connect.php';
     include 'fonctions.php';
+    include 'fonctions_s3.php';
     secu();
 
     if (!isset($_GET['id']) or $_GET['id'] == '') {
@@ -46,7 +47,7 @@
         <div class="description">
             <?php echo nl2br($produit['PRO_description']); ?>
         </div>
-        
+
 
         <?php
             $sql = "SELECT * FROM ressources WHERE PRO_id = $PRO_id";
@@ -60,9 +61,11 @@
             <header>Ressources</header>
 
             <?php
+                $bucket = 'images';
                 foreach($ressources as $ressource) {
                     if ($ressource['RE_type'] == 'img') {
-                        echo '<img src="'.$ressource['RE_url'].'" class="img-thumbnail thumb" data-id="'.$ressource['RE_id'].'">';
+                        $img = base64_encode(getObject($bucket_name, $ressource['RE_url'])['Body']);
+                        echo '<img src="data:image;base64,'.$img.'" class="img-thumbnail thumb" data-id="'.$ressource['RE_id'].'">';
                     }
                 }
             ?>

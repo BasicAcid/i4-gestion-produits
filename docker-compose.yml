@@ -31,3 +31,6 @@ services:
     environment:
       MYSQL_HOST: db
       MYSQL_ROOT_PASSWORD: 'root'
+
+volumes:
+  minio-storage:

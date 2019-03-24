@@ -1,11 +1,13 @@
 <?php
 
     include 'connect.php';
+    include 'fonctions_s3.php';
+
+    use Aws\Exception\AwsException;
 
     $action = (isset($_POST['action'])) ? $_POST['action'] : $_GET['action'];
 
     switch ($action) {
-
 
         case 'ajout_produit':
 
@@ -24,10 +26,10 @@
                         $extension = pathinfo($_FILES["PRO_ressources"]["name"][$key],PATHINFO_EXTENSION);
                         $md5 = md5_file($tmp_name);
                         $name = $PRO_id."-".$md5.".".$extension;
-                        // $url = "uploads/$name";
-                        // move_uploaded_file($tmp_name, $url);
-
-                        $sql = "INSERT INTO ressources (RE_type,RE_url,PRO_id) VALUES ('img','$url','$PRO_id')";
+                        $content = file_get_contents($tmp_name);
+                        $bucket = "images";
+                        putObject($bucket_name, $name, $content);
+                        $sql = "INSERT INTO ressources (RE_type,RE_url,PRO_id) VALUES ('img','$name','$PRO_id')";
                         mysqli_query($link,$sql);
 
                     }
@@ -57,10 +59,9 @@
                         $extension = pathinfo($_FILES["PRO_ressources"]["name"][$key],PATHINFO_EXTENSION);
                         $md5 = md5_file($tmp_name);
                         $name = $_POST['PRO_id']."-".$md5.".".$extension;
-                        $url = "uploads/$name";
-                        move_uploaded_file($tmp_name, $url);
-
-                        $sql = "INSERT INTO ressources (RE_type,RE_url,PRO_id) VALUES ('img','$url',$PRO_id)";
+                        $content = file_get_contents($tmp_name);
+                        putObject($bucket_name, $name, $content);
+                        $sql = "INSERT INTO ressources (RE_type,RE_url,PRO_id) VALUES ('img','$name',$PRO_id)";
                         mysqli_query($link,$sql);
 
                     }
@@ -85,6 +86,7 @@
 
                     $sql = "DELETE FROM ressources WHERE RE_id = '$RE_id'";
                     if (mysqli_query($link, $sql)) {
+                        deleteObject($bucket_name, $ressource['RE_url']);
                         if (file_exists($ressource['RE_url'])) {
                             unlink($ressource['RE_url']);
                         }
@@ -115,6 +117,7 @@
                             $RE_id = $ressource['RE_id'];
                             $sql = "DELETE FROM ressources WHERE RE_id = $RE_id";
                             if (mysqli_query($link, $sql)) {
+                                deleteObject($bucket_name, $ressource['RE_url']);
                                 if (file_exists($ressource['RE_url'])) {
                                     unlink($ressource['RE_url']);
                                 }
